@@ -31,7 +31,7 @@ jobs:
     - name: "コンテナイメージをビルドしてghcr.ioにコンテナイメージをpushする"
       uses: docker/build-push-action@v5
       with:
-        file: ./Dockerfile
+        file: ../Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }} # 前ステップで設定したタグを参照する
         labels: ${{ steps.meta.outputs.labels }} # 前ステップで設定したラベルを参照する
