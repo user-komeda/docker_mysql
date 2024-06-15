@@ -3,6 +3,9 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
 
@@ -19,15 +22,20 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.MY_TOKEN }}
     - name: "メタデータを作成する"
       id: meta # 後段で参照できるようにoutputsに登録する
       uses: docker/metadata-action@v5
       with:
-        images: ghcr.io/kei-s16/ghcr-container-push-demo
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
-          type=raw,value=latest
-          type=sha,prefix=,suffix=,format=short
+          type=ref,event=branch
+          type=semver,pattern={{version}}
+          type=sha
+        labels: |
+          org.opencontainers.image.title=sample-app
+          org.opencontainers.image.vendor="AP Communications Co.,Ltd."
+          org.opencontainers.image.licenses=Apache-2.0
     - name: "コンテナイメージをビルドしてghcr.ioにコンテナイメージをpushする"
       uses: docker/build-push-action@v5
       with:
